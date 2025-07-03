@@ -1,0 +1,535 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://markdeck.dev/schemas/theme.json",
+  "title": "MarkDeck Theme Schema",
+  "description": "JSON schema for MarkDeck theme configuration files",
+  "type": "object",
+  "required": ["schema_version", "metadata", "master_slides", "slide_types", "styling"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for compatibility checking",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "examples": ["1.0", "1.0.0"]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Theme metadata and information",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable theme name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "version": {
+          "type": "string",
+          "description": "Theme version",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+        },
+        "author": {
+          "type": "string",
+          "description": "Theme author",
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "description": "Theme description",
+          "maxLength": 500
+        },
+        "license": {
+          "type": "string",
+          "description": "Theme license",
+          "maxLength": 50
+        },
+        "tags": {
+          "type": "array",
+          "description": "Theme tags for categorization",
+          "items": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "master_slides": {
+      "type": "object",
+      "description": "Master slide layout definitions",
+      "required": ["title", "content"],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/slide_layout"
+        },
+        "content": {
+          "$ref": "#/$defs/slide_layout"
+        },
+        "section": {
+          "$ref": "#/$defs/slide_layout"
+        },
+        "blank": {
+          "$ref": "#/$defs/slide_layout"
+        },
+        "two_column": {
+          "$ref": "#/$defs/slide_layout"
+        },
+        "comparison": {
+          "$ref": "#/$defs/slide_layout"
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/slide_layout"
+      }
+    },
+    "slide_types": {
+      "type": "object",
+      "description": "Mapping of markdown elements to slide types",
+      "required": ["mapping"],
+      "properties": {
+        "mapping": {
+          "type": "object",
+          "description": "Element to slide type mapping",
+          "properties": {
+            "header1": {
+              "type": "string",
+              "description": "Slide type for H1 headers"
+            },
+            "header2": {
+              "type": "string", 
+              "description": "Slide type for H2 headers"
+            },
+            "header3": {
+              "type": "string",
+              "description": "Slide type for H3 headers"
+            },
+            "content": {
+              "type": "string",
+              "description": "Default content slide type"
+            },
+            "list": {
+              "type": "string",
+              "description": "Slide type for lists"
+            },
+            "image": {
+              "type": "string",
+              "description": "Slide type for images"
+            },
+            "table": {
+              "type": "string",
+              "description": "Slide type for tables"
+            },
+            "code": {
+              "type": "string",
+              "description": "Slide type for code blocks"
+            }
+          }
+        },
+        "custom_layouts": {
+          "type": "object",
+          "description": "Custom layout definitions",
+          "additionalProperties": {
+            "$ref": "#/$defs/slide_layout"
+          }
+        }
+      }
+    },
+    "styling": {
+      "type": "object",
+      "description": "Global styling configuration",
+      "required": ["fonts", "colors"],
+      "properties": {
+        "fonts": {
+          "$ref": "#/$defs/font_config"
+        },
+        "colors": {
+          "$ref": "#/$defs/color_config"
+        },
+        "spacing": {
+          "$ref": "#/$defs/spacing_config"
+        },
+        "animations": {
+          "$ref": "#/$defs/animation_config"
+        }
+      }
+    },
+    "objects": {
+      "type": "object",
+      "description": "Object-specific configurations",
+      "properties": {
+        "text_boxes": {
+          "$ref": "#/$defs/text_box_config"
+        },
+        "images": {
+          "$ref": "#/$defs/image_config"
+        },
+        "tables": {
+          "$ref": "#/$defs/table_config"
+        },
+        "charts": {
+          "$ref": "#/$defs/chart_config"
+        }
+      }
+    },
+    "programmatic": {
+      "type": "object",
+      "description": "Programmatic theme generation",
+      "properties": {
+        "scripts": {
+          "type": "object",
+          "description": "Python scripts for dynamic generation",
+          "properties": {
+            "pre_process": {
+              "type": "string",
+              "description": "Pre-processing script"
+            },
+            "post_process": {
+              "type": "string",
+              "description": "Post-processing script"
+            },
+            "slide_generator": {
+              "type": "string",
+              "description": "Custom slide generation script"
+            }
+          }
+        },
+        "conditions": {
+          "type": "object",
+          "description": "Conditional styling rules",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "type": "string",
+                "description": "Python expression for condition"
+              },
+              "styling": {
+                "type": "object",
+                "description": "Styling to apply when condition is true"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "slide_layout": {
+      "type": "object",
+      "description": "Slide layout definition",
+      "properties": {
+        "layout": {
+          "type": "string",
+          "description": "Layout identifier"
+        },
+        "placeholders": {
+          "type": "object",
+          "description": "Placeholder definitions",
+          "additionalProperties": {
+            "$ref": "#/$defs/placeholder"
+          }
+        },
+        "background": {
+          "$ref": "#/$defs/background_config"
+        },
+        "dimensions": {
+          "$ref": "#/$defs/dimensions"
+        }
+      }
+    },
+    "placeholder": {
+      "type": "object",
+      "description": "Placeholder definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["title", "content", "image", "table", "chart"]
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "size": {
+          "$ref": "#/$defs/size"
+        },
+        "styling": {
+          "type": "object"
+        }
+      }
+    },
+    "font_config": {
+      "type": "object",
+      "description": "Font configuration",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "heading": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "body": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "code": {
+          "$ref": "#/$defs/font_spec"
+        }
+      }
+    },
+    "font_spec": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "size": {
+          "type": "number",
+          "description": "Font size in points",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "weight": {
+          "type": "string",
+          "enum": ["normal", "bold", "lighter", "bolder"]
+        },
+        "style": {
+          "type": "string",
+          "enum": ["normal", "italic", "oblique"]
+        },
+        "color": {
+          "type": "string",
+          "description": "Font color (hex, RGB, or color name)"
+        }
+      }
+    },
+    "color_config": {
+      "type": "object",
+      "description": "Color palette configuration",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "Primary color"
+        },
+        "secondary": {
+          "type": "string",
+          "description": "Secondary color"
+        },
+        "accent": {
+          "type": "string",
+          "description": "Accent color"
+        },
+        "background": {
+          "type": "string",
+          "description": "Background color"
+        },
+        "text": {
+          "type": "string",
+          "description": "Default text color"
+        },
+        "palette": {
+          "type": "array",
+          "description": "Additional color palette",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "spacing_config": {
+      "type": "object",
+      "description": "Spacing configuration",
+      "properties": {
+        "margins": {
+          "$ref": "#/$defs/margin_config"
+        },
+        "padding": {
+          "$ref": "#/$defs/padding_config"
+        },
+        "line_spacing": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 5.0
+        }
+      }
+    },
+    "margin_config": {
+      "type": "object",
+      "properties": {
+        "top": {"type": "number"},
+        "right": {"type": "number"},
+        "bottom": {"type": "number"},
+        "left": {"type": "number"}
+      }
+    },
+    "padding_config": {
+      "type": "object",
+      "properties": {
+        "top": {"type": "number"},
+        "right": {"type": "number"},
+        "bottom": {"type": "number"},
+        "left": {"type": "number"}
+      }
+    },
+    "animation_config": {
+      "type": "object",
+      "description": "Animation configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "entrance": {
+          "$ref": "#/$defs/animation_spec"
+        },
+        "emphasis": {
+          "$ref": "#/$defs/animation_spec"
+        },
+        "exit": {
+          "$ref": "#/$defs/animation_spec"
+        }
+      }
+    },
+    "animation_spec": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["fade", "fly", "wipe", "split", "appear", "dissolve"]
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10.0
+        },
+        "delay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10.0
+        }
+      }
+    },
+    "text_box_config": {
+      "type": "object",
+      "description": "Text box configuration",
+      "properties": {
+        "default_styling": {
+          "type": "object"
+        },
+        "auto_fit": {
+          "type": "boolean",
+          "default": true
+        },
+        "word_wrap": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "image_config": {
+      "type": "object",
+      "description": "Image handling configuration",
+      "properties": {
+        "default_size": {
+          "$ref": "#/$defs/size"
+        },
+        "quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 85
+        },
+        "compression": {
+          "type": "string",
+          "enum": ["none", "low", "medium", "high"],
+          "default": "medium"
+        }
+      }
+    },
+    "table_config": {
+      "type": "object",
+      "description": "Table styling configuration",
+      "properties": {
+        "header_styling": {
+          "type": "object"
+        },
+        "row_styling": {
+          "type": "object"
+        },
+        "border_styling": {
+          "type": "object"
+        }
+      }
+    },
+    "chart_config": {
+      "type": "object",
+      "description": "Chart configuration",
+      "properties": {
+        "default_type": {
+          "type": "string",
+          "enum": ["bar", "line", "pie", "scatter", "area"]
+        },
+        "color_scheme": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "background_config": {
+      "type": "object",
+      "description": "Background configuration",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["solid", "gradient", "image", "pattern"]
+        },
+        "color": {
+          "type": "string"
+        },
+        "gradient": {
+          "type": "object",
+          "properties": {
+            "start_color": {"type": "string"},
+            "end_color": {"type": "string"},
+            "direction": {
+              "type": "string",
+              "enum": ["horizontal", "vertical", "diagonal"]
+            }
+          }
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "path": {"type": "string"},
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"}
+      }
+    },
+    "size": {
+      "type": "object",
+      "properties": {
+        "width": {"type": "number"},
+        "height": {"type": "number"}
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "width": {"type": "number"},
+        "height": {"type": "number"}
+      }
+    }
+  }
+}

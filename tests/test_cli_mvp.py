@@ -63,7 +63,7 @@ def sample_theme():
         "colors": {
             "primary": "#1f4e79",
             "secondary": "#70ad47",
-            "background": "#ffffff", 
+            "background": "#ffffff",
             "text": "#333333"
         }
     }

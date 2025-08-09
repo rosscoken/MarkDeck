@@ -1,63 +1,60 @@
 # MarkDeck
 
-A sophisticated command-line tool that converts Markdown files into professional PowerPoint presentations with optional PDF export.
+A command-line tool that converts Markdown files into professional PowerPoint presentations using Pandoc JSON AST parsing.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 ## Features
 
 - **Markdown to PowerPoint**: Convert Markdown files to professional PPTX presentations
-- **PDF Export**: Optional PDF export for sharing and printing
-- **Comprehensive Theming**: JSON-based theming with full PowerPoint object model access
-- **Speaker Notes**: Extract speaker notes from Markdown comment blocks
-- **Plugin Architecture**: Extensible plugin system for custom functionality
-- **Pandoc Integration**: Robust Markdown parsing with Pandoc
-- **CI/CD Ready**: Golden-file testing and automated validation
-- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Pandoc Integration**: Robust Markdown parsing with Pandoc JSON AST
+- **Theme System**: JSON-based theming with fonts, colors, and layouts
+- **Speaker Notes**: Extract speaker notes from fenced divs (`::: notes`)
+- **CLI Commands**: Build, init, and validate commands
+- **Schema Validation**: Validate themes against JSON schema
 
 ## Quick Start
 
-### Installation
+### Prerequisites
 
+**Install Pandoc** (required):
+- **Ubuntu/Debian**: `sudo apt install pandoc`
+- **macOS**: `brew install pandoc`
+- **Windows**: `choco install pandoc`
+- **Or download from**: https://pandoc.org/installing.html
+
+**Install Python dependencies**:
 ```bash
-# Install from PyPI (when available)
-pip install markdeck
-
-# Or install from source
-git clone https://github.com/rtcok/markdeck.git
-cd markdeck
-pip install -e .
+pip install python-pptx jsonschema typer rich pyyaml toml
 ```
 
 ### Basic Usage
 
+1. **Initialize example files**:
 ```bash
-# Convert a Markdown file to PowerPoint
-markdeck presentation.md
+python markdeck_cli.py init
+```
 
-# Use a specific theme
-markdeck presentation.md --theme corporate
+2. **Build a presentation**:
+```bash
+python markdeck_cli.py build examples/basic.md --theme examples/theme.json
+```
 
-# Export to both PPTX and PDF
-markdeck presentation.md --pdf
-
-# Specify output location
-markdeck presentation.md --output slides.pptx
+3. **Validate a theme**:
+```bash
+python markdeck_cli.py validate --theme examples/theme.json
 ```
 
 ### Example Markdown
-
-Create a file called `presentation.md`:
 
 ```markdown
 # Welcome to MarkDeck
 ## Converting Markdown to PowerPoint Made Easy
 
-<!-- Speaker note: This is the opening slide. Welcome the audience and introduce MarkDeck. -->
-
----
+::: notes
+This is a speaker note that will appear in presenter notes.
+:::
 
 ## Key Features
 
@@ -66,9 +63,12 @@ Create a file called `presentation.md`:
 - **Flexible theming**: Customize the look and feel
 - **Speaker notes**: Add notes for presenters
 
-<!-- Speaker note: Highlight the main benefits of using MarkDeck. -->
+## Code Example
 
----
+```python
+def hello_world():
+    print("Hello, MarkDeck!")
+```
 
 ## Getting Started
 
@@ -76,255 +76,250 @@ Create a file called `presentation.md`:
 2. Choose a theme (or create your own)
 3. Run MarkDeck to generate your presentation
 4. Present with confidence!
-
-<!-- Speaker note: Walk through the simple process step by step. -->
 ```
 
-## Advanced Usage
-
-### Custom Themes
-
-Create custom themes using JSON configuration:
-
-```bash
-# Validate a theme
-markdeck --validate-theme mytheme.json
-
-# Use a custom theme directory
-markdeck presentation.md --theme-dir ./themes --theme custom
-```
-
-### Configuration File
-
-Create a `markdeck.yaml` configuration file:
-
-```yaml
-# Default settings
-theme: corporate
-output_format: pptx
-export_pdf: false
-
-# Theme settings
-theme_directories:
-  - ./themes
-  - ~/.markdeck/themes
-
-# Plugin settings
-plugins:
-  enabled: true
-  directories:
-    - ./plugins
-    - ~/.markdeck/plugins
-```
-
-### Plugin Development
-
-Extend MarkDeck with custom plugins:
-
-```python
-# plugins/my_plugin.py
-from markdeck.plugins.base import MarkDeckPlugin
-
-class MyPlugin(MarkDeckPlugin):
-    name = "my_plugin"
-    version = "1.0.0"
-    
-    def process(self, data):
-        # Custom processing logic
-        return data
-```
-
-## Project Structure
-
-```
-markdeck/
-├── markdeck/              # Main package
-│   ├── cli/               # Command-line interface
-│   ├── core/              # Core processing engine
-│   ├── parsers/           # Markdown parsing
-│   ├── themes/            # Theming system
-│   ├── generators/        # Slide generation
-│   ├── exporters/         # Export functionality
-│   ├── plugins/           # Plugin system
-│   ├── config/            # Configuration management
-│   └── utils/             # Utilities
-├── tests/                 # Test suite
-├── docs/                  # Documentation
-├── examples/              # Example files
-└── schemas/               # JSON schemas
-```
-
-## Dependencies
-
-### Core Dependencies
-
-- **Pandoc**: Markdown parsing and AST processing
-- **python-pptx**: PowerPoint file generation
-- **jsonschema**: Theme validation
-- **pydantic**: Data validation and settings
-- **rich**: Enhanced CLI output
-
-### Optional Dependencies
-
-- **PDF Export**: `unoconv` or `python-docx2pdf`
-- **Visual Testing**: `opencv-python` for image comparison
-- **Development**: `pytest`, `black`, `mypy`, `ruff`
-
-## Architecture
-
-MarkDeck follows a modular architecture with clear separation of concerns:
-
-```mermaid
-graph TB
-    CLI[CLI Interface] --> Core[Core Engine]
-    Core --> Parser[Markdown Parser]
-    Core --> Theme[Theme Engine]
-    Core --> Generator[Slide Generator]
-    Core --> Exporter[Export Engine]
-    
-    Parser --> Pandoc[Pandoc Integration]
-    Theme --> JSON[JSON Schema Validator]
-    Generator --> PPTX[python-pptx Integration]
-    
-    Core --> PluginMgr[Plugin Manager]
-    PluginMgr --> Plugins[Plugin Directory]
-```
-
-### Key Components
-
-1. **CLI Interface**: Command parsing and user interaction
-2. **Core Engine**: Orchestrates the conversion process
-3. **Markdown Parser**: Pandoc integration and AST processing
-4. **Theme Engine**: JSON theme processing and validation
-5. **Slide Generator**: PowerPoint generation with python-pptx
-6. **Export Engine**: Multi-format export capabilities
-7. **Plugin Manager**: Directory-based plugin system
-
-## Theming System
-
-MarkDeck provides comprehensive theming support through JSON configuration:
-
-### Theme Structure
+### Example Theme
 
 ```json
 {
-  "schema_version": "1.0",
-  "metadata": {
-    "name": "My Theme",
-    "version": "1.0.0",
-    "author": "Your Name"
+  "fonts": {
+    "heading": {"family": "Calibri", "size": 32, "color": "#1f4e79"},
+    "body": {"family": "Calibri", "size": 18, "color": "#333333"},
+    "code": {"family": "Consolas", "size": 14, "color": "#000000"}
   },
-  "master_slides": {
-    "title": { /* Title slide layout */ },
-    "content": { /* Content slide layout */ },
-    "section": { /* Section slide layout */ }
-  },
-  "styling": {
-    "fonts": { /* Font specifications */ },
-    "colors": { /* Color palette */ },
-    "spacing": { /* Spacing rules */ }
-  },
-  "objects": {
-    "text_boxes": { /* Text box styling */ },
-    "images": { /* Image handling */ },
-    "tables": { /* Table styling */ }
+  "colors": {
+    "primary": "#1f4e79",
+    "secondary": "#70ad47",
+    "background": "#ffffff", 
+    "text": "#333333"
   }
 }
 ```
 
-### Built-in Themes
+## CLI Commands
 
-- **Corporate**: Professional business theme
-- **Academic**: Clean academic presentation theme
-- **Minimal**: Simple, distraction-free theme
+### Build Command
 
-## Testing
-
-MarkDeck includes comprehensive testing with multiple validation approaches:
-
-### Golden File Testing
+Convert Markdown to PowerPoint:
 
 ```bash
-# Run golden file tests
-python -m pytest tests/golden/
-
-# Update golden files
-python tests/golden/runner.py --update
+python markdeck_cli.py build input.md [OPTIONS]
 ```
 
-### Visual Regression Testing
+**Options:**
+- `-o, --output PATH`: Output PowerPoint file
+- `--theme PATH`: Theme JSON file  
+- `--template PATH`: PowerPoint template file
+- `--config PATH`: Config file (markdeck.toml/yaml)
+- `-v, --verbose`: Verbose output
+
+**Examples:**
+```bash
+# Basic usage
+python markdeck_cli.py build presentation.md
+
+# With custom theme and output
+python markdeck_cli.py build presentation.md --theme corporate.json -o slides.pptx
+
+# Verbose output
+python markdeck_cli.py build presentation.md --verbose
+```
+
+### Init Command
+
+Create example files:
 
 ```bash
-# Run visual tests
-python -m pytest tests/visual/
-
-# Generate visual diffs
-python tests/visual/compare.py --diff
+python markdeck_cli.py init [OPTIONS]
 ```
 
-### Performance Testing
+**Options:**
+- `--force`: Overwrite existing files
+- `--dir PATH`: Directory to create files in
+
+**Examples:**
+```bash
+# Create examples in current directory
+python markdeck_cli.py init
+
+# Force overwrite existing files
+python markdeck_cli.py init --force
+```
+
+### Validate Command
+
+Validate theme configuration:
 
 ```bash
-# Run performance benchmarks
-python -m pytest tests/performance/
-
-# Generate performance reports
-python tests/performance/benchmark.py --report
+python markdeck_cli.py validate --theme theme.json
 ```
+
+## Markdown Features
+
+### Slide Structure
+
+- **H1 headings** (`#`) create section slides or title slide (if first)
+- **H2 headings** (`##`) create content slides
+- **Horizontal rules** (`---`) create slide breaks
+
+### Content Types
+
+- **Paragraphs**: Regular text content
+- **Bullet Lists**: Unordered and ordered lists
+- **Code Blocks**: Formatted with monospace font
+- **Images**: Placeholder support (full image support planned)
+
+### Speaker Notes
+
+Use fenced divs to add speaker notes:
+
+```markdown
+## Slide Title
+
+Slide content here.
+
+::: notes
+This is a speaker note that will appear in presenter notes but not on the slide.
+:::
+```
+
+## Theme System
+
+### Theme Structure
+
+Themes are JSON files validated against a schema:
+
+```json
+{
+  "fonts": {
+    "heading": {"family": "string", "size": number, "color": "#hex"},
+    "body": {"family": "string", "size": number, "color": "#hex"},
+    "code": {"family": "string", "size": number, "color": "#hex"}
+  },
+  "colors": {
+    "primary": "#hex",
+    "secondary": "#hex", 
+    "background": "#hex",
+    "text": "#hex"
+  },
+  "layouts": {
+    "title": number,
+    "title_content": number,
+    "section": number
+  }
+}
+```
+
+### Creating Custom Themes
+
+1. Start with the example theme from `markdeck_cli.py init`
+2. Modify fonts, colors, and layouts
+3. Validate with `markdeck_cli.py validate --theme your_theme.json`
+4. Use with `markdeck_cli.py build --theme your_theme.json`
+
+## Architecture
+
+MarkDeck follows a simple, modular architecture:
+
+```
+Markdown Input
+    ↓
+Pandoc (JSON AST)
+    ↓
+Slide Parser
+    ↓
+Theme Application
+    ↓
+PowerPoint Generation (python-pptx)
+    ↓
+PPTX Output
+```
+
+### Key Components
+
+1. **Pandoc Bridge**: Converts Markdown to JSON AST using Pandoc
+2. **Slide Parser**: Processes AST into slide structure
+3. **Theme Engine**: Applies styling from JSON theme
+4. **PPTX Generator**: Creates PowerPoint files using python-pptx
 
 ## Development
-
-### Setting up Development Environment
-
-```bash
-# Clone the repository
-git clone https://github.com/rtcok/markdeck.git
-cd markdeck
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install development dependencies
-pip install -e ".[dev]"
-
-# Install pre-commit hooks
-pre-commit install
-```
 
 ### Running Tests
 
 ```bash
-# Run all tests
-pytest
+# Install test dependencies
+pip install pytest
 
-# Run specific test categories
-pytest tests/unit/
-pytest tests/integration/
-pytest -m "not slow"  # Skip slow tests
-
-# Run with coverage
-pytest --cov=markdeck --cov-report=html
+# Run tests
+python -m pytest tests/test_cli_mvp.py -v
 ```
 
-### Code Quality
+### Project Structure
 
-```bash
-# Format code
-black markdeck/ tests/
-
-# Lint code
-ruff check markdeck/ tests/
-
-# Type checking
-mypy markdeck/
 ```
+MarkDeck/
+├── markdeck_cli.py          # Standalone CLI implementation
+├── examples/                # Example files
+│   ├── basic.md            # Sample Markdown presentation
+│   └── theme.json          # Sample theme configuration
+├── schemas/                 # JSON schemas
+│   └── theme.schema.json   # Theme validation schema
+├── tests/                   # Test suite
+│   └── test_cli_mvp.py     # MVP functionality tests
+└── .github/workflows/      # CI/CD configuration
+    └── ci.yml              # GitHub Actions workflow
+```
+
+## Troubleshooting
+
+### Pandoc Not Found
+
+If you get a "Pandoc not found" error:
+
+1. **Check installation**: `pandoc --version`
+2. **Install Pandoc**: Follow installation instructions above
+3. **Check PATH**: Ensure pandoc is in your system PATH
+
+### Theme Validation Errors
+
+If theme validation fails:
+
+1. **Check JSON syntax**: Ensure valid JSON format
+2. **Required fields**: Include `fonts` and `colors` sections
+3. **Color format**: Use hex colors like `#1f4e79`
+4. **Run validate**: `markdeck_cli.py validate --theme theme.json`
+
+### PowerPoint Generation Issues
+
+If PPTX generation fails:
+
+1. **Check permissions**: Ensure write access to output directory
+2. **Template file**: Verify template file exists (if using `--template`)
+3. **Dependencies**: Ensure `python-pptx` is installed
+
+## Roadmap
+
+### Current (MVP)
+- [x] Core Markdown to PowerPoint conversion
+- [x] Basic theming system
+- [x] CLI interface (build, init, validate)
+- [x] Pandoc integration with JSON AST
+- [x] Speaker notes support
+- [x] Theme validation
+- [x] Example files and documentation
+
+### Future Enhancements
+- [ ] PDF export support
+- [ ] Plugin system for extensibility
+- [ ] Advanced image handling
+- [ ] Table support
+- [ ] Custom slide layouts
+- [ ] Animation support
+- [ ] Web-based theme editor
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Workflow
+We welcome contributions! To get started:
 
 1. Fork the repository
 2. Create a feature branch
@@ -332,41 +327,6 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 4. Add tests for new functionality
 5. Ensure all tests pass
 6. Submit a pull request
-
-### Code Standards
-
-- Follow PEP 8 style guidelines
-- Use type hints for all functions
-- Write comprehensive docstrings
-- Include unit tests for new features
-- Update documentation as needed
-
-## Roadmap
-
-### Version 1.0 (Current)
-
-- [x] Core Markdown to PowerPoint conversion
-- [x] Basic theming system
-- [x] CLI interface
-- [x] Plugin architecture foundation
-- [ ] Comprehensive testing suite
-- [ ] Documentation completion
-
-### Version 1.1 (Planned)
-
-- [ ] Advanced animation support
-- [ ] Interactive slide elements
-- [ ] Web-based theme editor
-- [ ] Cloud theme marketplace
-- [ ] Real-time preview server
-
-### Version 2.0 (Future)
-
-- [ ] Collaborative editing
-- [ ] Version control integration
-- [ ] REST API
-- [ ] Web interface
-- [ ] Enterprise features
 
 ## License
 
@@ -376,14 +336,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Pandoc**: For excellent Markdown parsing capabilities
 - **python-pptx**: For PowerPoint file generation
-- **Microsoft**: For the Office Open XML specification
-
-## Support
-
-- **Documentation**: [markdeck.readthedocs.io](https://markdeck.readthedocs.io)
-- **Issues**: [GitHub Issues](https://github.com/rtcok/markdeck/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/rtcok/markdeck/discussions)
-
----
-
-*Made with ❤️ by the MarkDeck team*
+- **Typer**: For the CLI framework
+- **Rich**: For beautiful terminal output

@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install pandoc (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get update && sudo apt-get install -y pandoc
+    
+    - name: Install pandoc (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install pandoc
+    
+    - name: Install pandoc (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install pandoc
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install python-pptx jsonschema typer rich pyyaml toml pytest
+    
+    - name: Lint with ruff (if available)
+      continue-on-error: true
+      run: |
+        pip install ruff || echo "Ruff not available"
+        ruff check . || echo "Ruff check completed with issues"
+    
+    - name: Format check with black (if available)
+      continue-on-error: true
+      run: |
+        pip install black || echo "Black not available"
+        black --check . || echo "Black format check completed with issues"
+    
+    - name: Type check with mypy (if available)
+      continue-on-error: true
+      run: |
+        pip install mypy || echo "MyPy not available"
+        mypy markdeck_cli.py || echo "MyPy check completed with issues"
+    
+    - name: Test CLI functionality
+      run: |
+        python markdeck_cli.py --version
+        python markdeck_cli.py --help
+    
+    - name: Test init command
+      run: |
+        mkdir test_output
+        cd test_output
+        python ../markdeck_cli.py init
+        ls -la examples/
+    
+    - name: Test validate command
+      run: |
+        cd test_output
+        python ../markdeck_cli.py validate --theme examples/theme.json
+    
+    - name: Test build command
+      run: |
+        cd test_output
+        python ../markdeck_cli.py build examples/basic.md --theme examples/theme.json -o test.pptx --verbose
+        ls -la test.pptx
+    
+    - name: Run unit tests
+      run: |
+        python -m pytest tests/test_cli_mvp.py -v
+    
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-outputs-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: |
+          test_output/
+          .pytest_cache/
+        retention-days: 7

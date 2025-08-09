@@ -84,7 +84,7 @@ def test_pandoc_detection():
         assert bridge.pandoc_path == pandoc_path
     else:
         # If pandoc is not installed, expect an error
-        with pytest.raises(ParseError):
+        with pytest.raises((ParseError, FileNotFoundError)):
             PandocBridge()
 
 

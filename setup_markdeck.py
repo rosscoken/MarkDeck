@@ -8,6 +8,7 @@ This script handles installation and setup of MarkDeck dependencies.
 import sys
 import subprocess
 import shutil
+import tempfile
 from pathlib import Path
 
 
@@ -86,11 +87,13 @@ def test_installation():
             return False
         
         # Test init command
+        # Create a temporary directory for testing
+        test_dir_path = tempfile.mkdtemp(prefix="markdeck_test_")
         subprocess.run([
-            sys.executable, "markdeck_cli.py", "init", "--dir", "/tmp/markdeck_test"
+            sys.executable, "markdeck_cli.py", "init", "--dir", test_dir_path
         ], check=True, capture_output=True)
         
-        test_dir = Path("/tmp/markdeck_test")
+        test_dir = Path(test_dir_path)
         if (test_dir / "examples" / "basic.md").exists():
             print("✅ Init command working")
             # Cleanup

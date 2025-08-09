@@ -11,9 +11,7 @@ import subprocess
 import os
 
 # Import the standalone CLI components
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from markdeck_cli import PandocBridge, PPTXGenerator, validate_theme_file
+from markdeck_cli import PandocBridge, PPTXGenerator, validate_theme_file, ParseError
 
 
 @pytest.fixture
@@ -86,7 +84,7 @@ def test_pandoc_detection():
         assert bridge.pandoc_path == pandoc_path
     else:
         # If pandoc is not installed, expect an error
-        with pytest.raises(Exception):
+        with pytest.raises((ParseError, FileNotFoundError)):
             PandocBridge()
 
 

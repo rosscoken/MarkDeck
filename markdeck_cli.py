@@ -18,9 +18,7 @@ import typer
 from rich.console import Console
 import jsonschema
 
-# Add project root to path
 project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
 
 app = typer.Typer(
     name="markdeck",
@@ -38,6 +36,22 @@ class ParseError(Exception):
 class MarkDeckError(Exception):
     """Base exception for MarkDeck errors."""
     pass
+
+
+# Default theme content for init command
+DEFAULT_THEME_JSON = """{
+  "fonts": {
+    "heading": {"family": "Calibri", "size": 32, "color": "#1f4e79"},
+    "body": {"family": "Calibri", "size": 18, "color": "#333333"},
+    "code": {"family": "Consolas", "size": 14, "color": "#000000"}
+  },
+  "colors": {
+    "primary": "#1f4e79",
+    "secondary": "#70ad47",
+    "background": "#ffffff", 
+    "text": "#333333"
+  }
+}"""
 
 
 class PandocBridge:
@@ -553,20 +567,7 @@ Run `markdeck build examples/basic.md` to generate your first presentation!
             console.print(f"[green]✓ Created {basic_md}[/green]")
         
         if not theme_json.exists():
-            theme_content = """{
-  "fonts": {
-    "heading": {"family": "Calibri", "size": 32, "color": "#1f4e79"},
-    "body": {"family": "Calibri", "size": 18, "color": "#333333"},
-    "code": {"family": "Consolas", "size": 14, "color": "#000000"}
-  },
-  "colors": {
-    "primary": "#1f4e79",
-    "secondary": "#70ad47",
-    "background": "#ffffff", 
-    "text": "#333333"
-  }
-}"""
-            theme_json.write_text(theme_content)
+            theme_json.write_text(DEFAULT_THEME_JSON)
             console.print(f"[green]✓ Created {theme_json}[/green]")
             
         console.print("\n[blue]Example files created! Try:[/blue]")

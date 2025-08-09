@@ -1,0 +1,44 @@
+{
+  "fonts": {
+    "heading": {
+      "family": "Calibri",
+      "size": 32,
+      "color": "#1f4e79"
+    },
+    "body": {
+      "family": "Calibri", 
+      "size": 18,
+      "color": "#333333"
+    },
+    "code": {
+      "family": "Consolas",
+      "size": 14,
+      "color": "#000000"
+    }
+  },
+  "colors": {
+    "primary": "#1f4e79",
+    "secondary": "#70ad47", 
+    "background": "#ffffff",
+    "text": "#333333"
+  },
+  "layouts": {
+    "title": 0,
+    "title_content": 1,
+    "section": 2,
+    "margins": {
+      "top": 1.0,
+      "right": 1.0,
+      "bottom": 1.0,
+      "left": 1.0
+    }
+  },
+  "image": {
+    "max_width": 80,
+    "max_height": 60
+  },
+  "code": {
+    "background_color": "#f8f8f8",
+    "padding": 10
+  }
+}

@@ -31,9 +31,9 @@ setup(
     description="A sophisticated command-line tool that converts Markdown files into professional PowerPoint presentations",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/rtcok/markdeck",
+    url="https://github.com/rosscoken/MarkDeck",
     project_urls={
-        "Bug Tracker": "https://github.com/rtcok/markdeck/issues",
+        "Bug Tracker": "https://github.com/rosscoken/MarkDeck/issues",
         "Documentation": "https://markdeck.readthedocs.io",
     },
     packages=find_packages(),

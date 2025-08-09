@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/rosscoken/MarkDeck/schemas/theme.schema.json",
+  "title": "MarkDeck Theme Schema",
+  "description": "JSON schema for MarkDeck theme configuration files",
+  "type": "object",
+  "required": ["fonts", "colors"],
+  "properties": {
+    "fonts": {
+      "type": "object",
+      "description": "Font configuration",
+      "required": ["heading", "body", "code"],
+      "properties": {
+        "heading": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "body": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "code": {
+          "$ref": "#/$defs/font_spec"
+        }
+      }
+    },
+    "colors": {
+      "type": "object",
+      "description": "Color palette configuration",
+      "required": ["primary", "secondary", "background", "text"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "Primary color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "secondary": {
+          "type": "string",
+          "description": "Secondary color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "background": {
+          "type": "string",
+          "description": "Background color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "text": {
+          "type": "string",
+          "description": "Default text color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        }
+      }
+    },
+    "layouts": {
+      "type": "object",
+      "description": "Layout configuration",
+      "properties": {
+        "title": {
+          "type": "integer",
+          "description": "Title slide layout index",
+          "minimum": 0
+        },
+        "title_content": {
+          "type": "integer", 
+          "description": "Title and content slide layout index",
+          "minimum": 0
+        },
+        "section": {
+          "type": "integer",
+          "description": "Section slide layout index", 
+          "minimum": 0
+        },
+        "margins": {
+          "type": "object",
+          "description": "Slide margins in inches",
+          "properties": {
+            "top": {"type": "number", "minimum": 0},
+            "right": {"type": "number", "minimum": 0},
+            "bottom": {"type": "number", "minimum": 0},
+            "left": {"type": "number", "minimum": 0}
+          }
+        }
+      }
+    },
+    "template": {
+      "type": "string",
+      "description": "Path to PowerPoint template file"
+    },
+    "image": {
+      "type": "object",
+      "description": "Image handling defaults",
+      "properties": {
+        "max_width": {
+          "type": "number",
+          "description": "Maximum width as percent of slide",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "max_height": {
+          "type": "number", 
+          "description": "Maximum height as percent of slide",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "description": "Code block styling",
+      "properties": {
+        "background_color": {
+          "type": "string",
+          "description": "Code background color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "padding": {
+          "type": "number",
+          "description": "Code block padding in points",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "font_spec": {
+      "type": "object",
+      "required": ["family", "size"],
+      "properties": {
+        "family": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "size": {
+          "type": "number",
+          "description": "Font size in points",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "color": {
+          "type": "string",
+          "description": "Font color (hex format)",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        }
+      }
+    }
+  }
+}

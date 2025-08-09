@@ -9,9 +9,21 @@ import subprocess
 import tempfile
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Union
+import logging
 
-from markdeck.core.exceptions import ParseError
-from markdeck.utils.logging import LoggerMixin
+
+class ParseError(Exception):
+    """Exception raised when parsing fails."""
+    pass
+
+
+class LoggerMixin:
+    """Mixin class to add logging capabilities to other classes."""
+    
+    @property
+    def logger(self) -> logging.Logger:
+        """Get logger instance for this class."""
+        return logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
 
 class PandocBridge(LoggerMixin):

@@ -48,7 +48,7 @@ DEFAULT_THEME_JSON = """{
   "colors": {
     "primary": "#1f4e79",
     "secondary": "#70ad47",
-    "background": "#ffffff", 
+    "background": "#ffffff",
     "text": "#333333"
   }
 }"""

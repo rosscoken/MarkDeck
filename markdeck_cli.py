@@ -592,14 +592,19 @@ def validate(
         raise typer.Exit(1)
 
 
-@app.callback()
-def main(
-    version: Optional[bool] = typer.Option(None, "--version", callback=lambda x: x, is_eager=True, help="Show version"),
-):
-    """MarkDeck: Convert Markdown to PowerPoint presentations."""
-    if version:
+def version_callback(value: bool):
+    """Handle version option."""
+    if value:
         console.print("MarkDeck 0.1.0")
         raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: Optional[bool] = typer.Option(None, "--version", callback=version_callback, is_eager=True, help="Show version"),
+):
+    """MarkDeck: Convert Markdown to PowerPoint presentations."""
+    pass
 
 
 if __name__ == "__main__":
